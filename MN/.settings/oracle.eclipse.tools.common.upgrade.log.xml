@@ -1,0 +1,8 @@
+<upgrade-log>
+  <entry time="2013-02-15 17:34:57 UTC">
+    <upgrade-participant pluginId="oracle.eclipse.tools.weblogic" pluginVersion="5.2.0.201211211917" class="oracle.eclipse.tools.weblogic.upgrade.internal.J2EELibrariesValidatorUpgradeParticipant"/>
+  </entry>
+  <entry time="2013-03-18 15:26:34 UTC">
+    <upgrade-participant pluginId="oracle.eclipse.tools.weblogic" pluginVersion="5.2.0.201211211917" class="oracle.eclipse.tools.weblogic.upgrade.internal.J2EELibrariesValidatorUpgradeParticipant"/>
+  </entry>
+</upgrade-log>

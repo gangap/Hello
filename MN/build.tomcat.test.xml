@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="MN Tomcat Test build" default="main">
+	<property name="src.dir" value="src/main/java" />
+	<property name="web.dir" value="WebContent" />
+	<property name="repo.dir" value="${user.home}/Desktop" />
+	<property name="build.version" value="2.0.4" />
+	<property name="target.dir" value="target" />
+	<property name="jar.dir" value="../Jar Files/jar" />
+	<property name="target.classes.dir" value="${target.dir}/classes" />
+	<property name="target.webinf.dir" value="${target.dir}/WEB-INF" />
+	<property name="target.metainf.dir" value="${target.dir}/META-INF" />
+	<property name="target.webinf.lib.dir" value="${target.dir}/WEB-INF/lib" />
+    <path id="Apache Commons">
+    	<fileset dir="${jar.dir}/Apache Commons">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="Jackson">
+    	<fileset dir="${jar.dir}/Jackson">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="javax.servlet">
+    	<fileset dir="${jar.dir}/javax.servlet">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="JSTL">
+    	<fileset dir="${jar.dir}/JSTL">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="Log4J">
+    	<fileset dir="${jar.dir}/Log4J">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="Oracle">
+    	<fileset dir="${jar.dir}/Oracle">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="Spring">
+    	<fileset dir="${jar.dir}/Spring">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>
+    <path id="Velocity">
+    	<fileset dir="${jar.dir}/Velocity">
+			<include name="**/*.jar"/>
+    	</fileset>
+    </path>	
+	<path id="MN.classpath">
+        <path refid="Apache Commons"/>
+		<path refid="Jackson"/>
+    	<path refid="javax.servlet"/>
+		<path refid="JSTL"/>
+        <path refid="Log4J"/>
+		<path refid="Oracle"/>
+    	<path refid="Spring"/>
+		<path refid="Velocity"/>
+    </path>
+	
+	<target name="main" depends="build-war,local-deploy" />
+		
+	<target name="-clean-all">
+		<delete dir="${target.dir}" includeemptydirs="true" includes="**" />
+	</target>
+
+	<target name="-compile" depends="-clean-all">
+		<mkdir dir="${target.classes.dir}" />
+		<javac sourcepath="" includeantruntime="false" debug="on" 
+			destdir="${target.classes.dir}"
+			srcdir="${src.dir}">
+			<classpath refid="MN.classpath"/>
+		</javac>
+		
+		<copy todir="${target.classes.dir}">
+			<fileset dir="${src.dir}" includes="**/*.xml, **/*.vm"/>
+		</copy>
+	</target>
+
+	<target name="-assemble" depends="-compile">
+		<mkdir dir="${target.webinf.dir}" />
+		<copy todir="${target.webinf.dir}">
+			<fileset dir="${web.dir}/WEB-INF" includes="**" />
+		</copy>
+
+		<mkdir dir="${target.webinf.lib.dir}"/>
+		<copy todir="${target.webinf.lib.dir}" flatten="true">
+			<path refid="MN.classpath" />
+		</copy>
+				
+		<mkdir dir="${target.metainf.dir}" />
+		<copy todir="${target.metainf.dir}">
+			<fileset dir="${web.dir}/META-INF" includes="**" excludes="/spring/env.properties"/>
+		</copy>
+		
+		<touch file="${target.metainf.dir}/spring/env.properties" />
+		<copy tofile="${target.metainf.dir}/spring/env.properties" file="${web.dir}/META-INF/spring/tomcat/test/env.properties" overwrite="true"/>
+		
+		<touch file="${target.metainf.dir}/context.xml" />
+		<copy tofile="${target.metainf.dir}/context.xml" file="${web.dir}/META-INF/spring/tomcat/test/context.xml" overwrite="true"/>
+	</target>
+
+	<target name="build-war" depends="-assemble" >
+		<war destfile="${target.dir}/MN.tomcat.test.war" 
+			needxmlfile="true">
+			<metainf dir="${target.metainf.dir}"/>
+			<classes dir="${target.classes.dir}" />
+			<webinf dir="${target.webinf.dir}" />	
+			<zipfileset dir="${web.dir}/resources" prefix="resources"/>		
+		</war>
+	</target>
+	
+	<target name="local-deploy" >
+		<copy file="${target.dir}/MN.tomcat.test.war" tofile="${repo.dir}/MN Versions/Test/tomcat/MN.${build.version}.test.war" />
+	</target>
+</project>
